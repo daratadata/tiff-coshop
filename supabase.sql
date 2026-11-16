@@ -1,0 +1,18 @@
+create table profiles(id uuid primary key references auth.users on delete cascade,phone text,role text default 'client');
+create table products(id text primary key,name text,price int,stock int default 0,active bool default true);
+create table zones(id serial primary key,name text,fee int default 0);
+create table orders(id bigserial primary key,user_id uuid references auth.users default auth.uid(),name text,phone text,zone text,address text,items jsonb,total int,status text default 'en_attente',paid bool default false,created_at timestamptz default now());
+create function is_admin() returns bool language sql security definer as $$select exists(select 1 from profiles where id=auth.uid() and role='admin')$$;
+create function handle_new_user() returns trigger language plpgsql security definer as $$begin insert into profiles(id,phone) values(new.id,new.raw_user_meta_data->>'phone');return new;end$$;
+create trigger on_signup after insert on auth.users for each row execute function handle_new_user();
+alter table profiles enable row level security;alter table products enable row level security;alter table zones enable row level security;alter table orders enable row level security;
+create policy "profil lu par soi" on profiles for select using(id=auth.uid() or is_admin());
+create policy "catalogue public" on products for select using(true);
+create policy "catalogue admin" on products for all using(is_admin()) with check(is_admin());
+create policy "zones publiques" on zones for select using(true);
+create policy "zones admin" on zones for all using(is_admin()) with check(is_admin());
+create policy "client crée sa commande" on orders for insert with check(user_id=auth.uid());
+create policy "client voit ses commandes" on orders for select using(user_id=auth.uid() or is_admin());
+create policy "admin modifie commandes" on orders for update using(is_admin());
+insert into products values('savon','Savon noir du Nigeria',1000,0,true),('karite','Beurre de karité de Korhogo',1000,0,true);
+-- Pour vous nommer gestionnaire : update profiles set role='admin' where phone='VOTRE_NUMERO';
