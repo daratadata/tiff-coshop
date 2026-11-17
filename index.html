@@ -41,7 +41,7 @@ small{color:var(--m)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
 <script>
-const SUPA_URL='',SUPA_KEY='',WA='2250173053238';
+const SUPA_URL='https://gbgpgbvqmhdksrzgcjbf.supabase.co',SUPA_KEY='sb_publishable_vg7rED35PYXmc1Uu3VYYXg_IpNfsABB',WA='2250173053238';
 const sb=SUPA_URL?supabase.createClient(SUPA_URL,SUPA_KEY):null;
 let TF={detail:1000,gros:800,gros_min:10,demi:20000,carton:40000,carton2:35000},isAdm=false;
 const sv=q=>{const c=Math.floor(q/50),r=q%50;return c*(c>=2?TF.carton2:TF.carton)+(r>=25?TF.demi+(r-25)*TF.gros:r>=TF.gros_min?r*TF.gros:r*TF.detail)};
