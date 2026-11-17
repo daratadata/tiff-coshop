@@ -7,7 +7,7 @@
 :root{--g:#d4a85a;--g2:#f3d99b;--bg:#0d0b08;--c:#1a160f;--t:#f5efe3;--m:#a79c88}
 *{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--t);font:16px system-ui,sans-serif;padding-bottom:90px}
 header{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;position:sticky;top:0;background:#0d0b08ee;backdrop-filter:blur(8px);z-index:5}
-header img{height:42px;border-radius:50%}button{font:inherit;cursor:pointer;border:0}
+header img{height:44px}.lg{display:flex;align-items:center;gap:8px}.lg b{font:400 20px Georgia,serif;letter-spacing:3px;color:var(--g2)}button{font:inherit;cursor:pointer;border:0}
 .ic{background:var(--c);color:var(--g);border-radius:20px;padding:8px 14px;margin-left:6px}
 .hero{height:52vh;min-height:340px;position:relative;touch-action:pan-y}#cv{width:100%;height:100%;display:block}
 .hero p{position:absolute;bottom:8px;width:100%;text-align:center;color:var(--m);font-size:12px}
@@ -24,8 +24,16 @@ input,select,textarea{width:100%;background:#0d0b08;color:var(--t);border:1px so
 .st{display:flex;gap:4px;margin-top:8px}.st i{flex:1;height:5px;border-radius:3px;background:#2a2316}.st i.d{background:var(--g)}
 .wa{position:fixed;right:14px;bottom:calc(18px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:#25d366;color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:6}
 small{color:var(--m)}
+#sp{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:spo .7s 2.1s forwards}
+#sp img{height:150px;animation:spi 1.6s ease-out both,glow 2s ease-in-out infinite}#sp b{font:400 30px Georgia,serif;letter-spacing:8px;color:var(--g2);animation:fu 1s .5s both}#sp small{animation:fu 1s 1s both}
+@keyframes spi{from{opacity:0;transform:scale(.4) rotate(-12deg)}to{opacity:1;transform:none}}@keyframes spo{to{opacity:0;visibility:hidden}}
+@keyframes glow{50%{filter:drop-shadow(0 0 22px #d4a85a)}}@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.card{animation:fu .6s both}.card li{animation:fu .5s both}.card li:nth-child(2){animation-delay:.1s}.card li:nth-child(3){animation-delay:.2s}.card li:nth-child(4){animation-delay:.3s}.card li:nth-child(5){animation-delay:.4s}
+.cta{background-size:200% 100%;background-image:linear-gradient(110deg,var(--g),var(--g2),var(--g));animation:sh 3s linear infinite}@keyframes sh{to{background-position:-200% 0}}
+.bp{animation:bp .4s}@keyframes bp{40%{transform:scale(1.35)}}.hero p{animation:fu 1s 2.4s both}.tabs button{transition:.3s}
 </style></head><body>
-<header><img src="img/logo.jpg" alt="TIFF & CO"><div><button class="ic" id="bG" style="display:none">⚙ Gestion</button><button class="ic" id="bO">Mes commandes</button><button class="ic" id="bA">Connexion</button><button class="ic" id="bC">🛍 <b id="n">0</b></button></div></header>
+<div id="sp"><img src="img/emblem.png" alt=""><b>TIFF &amp; CO</b><small>Révélez votre beauté, affirmez votre style.</small></div>
+<header><div class="lg"><img src="img/emblem.png" alt="TIFF & CO"><b>TIFF &amp; CO</b></div><div><button class="ic" id="bG" style="display:none">⚙ Gestion</button><button class="ic" id="bO">Mes commandes</button><button class="ic" id="bA">Connexion</button><button class="ic" id="bC">🛍 <b id="n">0</b></button></div></header>
 <div class="hero"><canvas id="cv"></canvas><p>Faites glisser pour tourner le produit ↻</p></div>
 <div class="tabs"><button class="on" data-p="savon">Savon noir</button><button data-p="karite">Beurre de karité</button></div>
 <div id="list"></div>
@@ -52,20 +60,21 @@ const $=s=>document.querySelector(s),F=n=>n.toLocaleString('fr-FR')+' F',tot=()=
 // 3D
 const cv=$('#cv'),R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true}),S=new THREE.Scene(),Cm=new THREE.PerspectiveCamera(40,1,.1,50);Cm.position.set(0,.6,6);
 S.add(new THREE.AmbientLight(0xffffff,.7));const L=new THREE.DirectionalLight(0xfff0d0,1.1);L.position.set(3,4,5);S.add(L);const L2=new THREE.PointLight(0xd4a85a,1.2,20);L2.position.set(-4,-1,3);S.add(L2);
-const tl=new THREE.TextureLoader(),T=u=>tl.load(u),G={};
-G.savon=new THREE.Group();[[0,0,0],[.3,1.0,-.3]].forEach(([x,y,z],i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(2.2,.8,1.4),new THREE.MeshStandardMaterial({map:T('img/'+(i?'savon2':'savon')+'.jpg'),roughness:.8}));b.position.set(x,y-.5,z);b.rotation.y=i*.5;G.savon.add(b)});
-G.karite=new THREE.Group();const jm=new THREE.Mesh(new THREE.CylinderGeometry(1.2,.95,1.3,48),new THREE.MeshStandardMaterial({map:T('img/karite.jpg'),roughness:.5}));
-const lid=new THREE.Mesh(new THREE.CylinderGeometry(1.28,1.28,.25,48),new THREE.MeshStandardMaterial({color:0xf3ead0,transparent:true,opacity:.75,roughness:.2}));lid.position.y=.75;G.karite.add(jm,lid);
-Object.values(G).forEach(g=>{g.visible=false;S.add(g)});G.savon.visible=true;
-const pts=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(Array.from({length:240},()=>(Math.random()-.5)*12),3)),new THREE.PointsMaterial({color:0xd4a85a,size:.04}));S.add(pts);
-let rx=0,vx=.006,dn=0,lx=0;cv.onpointerdown=e=>{dn=1;lx=e.clientX};addEventListener('pointerup',()=>dn=0);addEventListener('pointermove',e=>{if(dn){rx+=(e.clientX-lx)*.01;lx=e.clientX}});
-function rs(){const w=cv.clientWidth,h=cv.clientHeight;R.setSize(w,h,false);R.setPixelRatio(devicePixelRatio);Cm.aspect=w/h;Cm.updateProjectionMatrix()}addEventListener('resize',rs);rs();
-(function a(t){requestAnimationFrame(a);if(!dn)rx+=vx;const g=G[cur];g.rotation.y=rx;g.position.y=Math.sin(Date.now()/700)*.08;g.rotation.x=.25;pts.rotation.y+=.0008;R.render(S,Cm)})();
+const tl=new THREE.TextureLoader(),G={},IM={savon:['p-savon1.png','p-savon2.png'],karite:['p-karite1.png','p-karite2.png']};
+Object.keys(IM).forEach(k=>{const g=new THREE.Group();for(let i=0;i<4;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,side:THREE.DoubleSide,alphaTest:.04}));m.material.map=tl.load('img/'+IM[k][i%2],t=>{const h=3;m.scale.set(h*t.image.width/t.image.height,h,1);m.material.needsUpdate=true});const an=i*Math.PI/2;m.position.set(Math.sin(an)*1.6,0,Math.cos(an)*1.6);m.rotation.y=an;g.add(m)}g.scale.setScalar(k=='savon'?1:.001);S.add(g);G[k]=g});
+const gl=document.createElement('canvas');gl.width=gl.height=128;const cx=gl.getContext('2d'),gr=cx.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(212,168,90,.55)');gr.addColorStop(1,'rgba(212,168,90,0)');cx.fillStyle=gr;cx.fillRect(0,0,128,128);
+const disc=new THREE.Mesh(new THREE.CircleGeometry(2.8,48),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(gl),transparent:true}));disc.rotation.x=-Math.PI/2;disc.position.y=-1.7;S.add(disc);
+const rings=[2.1,2.5].map(r=>{const t=new THREE.Mesh(new THREE.TorusGeometry(r,.015,8,80),new THREE.MeshBasicMaterial({color:0xd4a85a}));t.rotation.x=Math.PI/2;t.position.y=-1.7;S.add(t);return t});
+const pts=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(Array.from({length:300},()=>(Math.random()-.5)*12),3)),new THREE.PointsMaterial({color:0xf3d99b,size:.05,transparent:true,opacity:.8}));S.add(pts);
+let rx=0,dn=0,lx=0,px=0;cv.onpointerdown=e=>{dn=1;lx=e.clientX};addEventListener('pointerup',()=>dn=0);addEventListener('pointermove',e=>{px=e.clientX/innerWidth-.5;if(dn){rx+=(e.clientX-lx)*.012;lx=e.clientX}});
+function rs(){const w=cv.clientWidth,h=cv.clientHeight;R.setSize(w,h,false);R.setPixelRatio(devicePixelRatio);Cm.aspect=w/h;Cm.updateProjectionMatrix();Cm.position.z=w<500?8:6.4}addEventListener('resize',rs);rs();Cm.position.y=.4;
+(function a(){requestAnimationFrame(a);const t=Date.now()/1000;if(!dn)rx+=.006;Object.entries(G).forEach(([k,g])=>{const tg=k==cur?1:.001;g.scale.setScalar(g.scale.x+(tg-g.scale.x)*.12);g.visible=g.scale.x>.02;g.rotation.y=rx+(k==cur?0:3);g.position.y=Math.sin(t*1.4)*.12});
+rings[0].rotation.z=t*.5;rings[1].rotation.z=-t*.3;disc.scale.setScalar(1+Math.sin(t*2)*.04);pts.rotation.y=t*.05;pts.position.y=Math.sin(t*.6)*.2;Cm.position.x+=(px*1.2-Cm.position.x)*.05;Cm.lookAt(0,0,0);R.render(S,Cm)})();
 // UI
 function draw(){$('#list').innerHTML=Object.entries(P).filter(([k])=>k==cur).map(([k,p])=>`<div class="card"><h2>${p.name}</h2><p>${p.d}</p><ul style="margin:10px 0 0 18px;color:var(--m);font-size:14px;line-height:1.6">${p.b.map(x=>'<li>'+x+'</li>').join('')}</ul><div class="price">${p.tiers()}</div><div class="row"><span class="q"><button data-m="${k}">−</button> <b>${cart[k]||0}</b> <button data-a="${k}">+</button></span><button class="cta" data-a="${k}">Ajouter au panier</button></div></div>`).join('');
 $('#n').textContent=Object.values(cart).reduce((a,b)=>a+b,0)}
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.p;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x==b));Object.entries(G).forEach(([k,g])=>g.visible=k==cur);draw()});
-document.addEventListener('click',e=>{const t=e.target,a=t.dataset.a,m=t.dataset.m;if(a){cart[a]=(cart[a]||0)+1;draw()}if(m){cart[m]=Math.max(0,(cart[m]||0)-1);if(!cart[m])delete cart[m];draw()}if('x'in t.dataset)t.closest('.dr').classList.remove('on');if(t.classList.contains('dr'))t.classList.remove('on')});
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.p;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x==b));draw()});
+document.addEventListener('click',e=>{const t=e.target,a=t.dataset.a,m=t.dataset.m;if(a){cart[a]=(cart[a]||0)+1;draw();const c=$('#bC');c.classList.remove('bp');void c.offsetWidth;c.classList.add('bp')}if(m){cart[m]=Math.max(0,(cart[m]||0)-1);if(!cart[m])delete cart[m];draw()}if('x'in t.dataset)t.closest('.dr').classList.remove('on');if(t.classList.contains('dr'))t.classList.remove('on')});
 const fz=()=>zones[+$('#zn').value||0]?.fee||0,upT=()=>$('#tot').textContent='Total : '+F(tot()+fz());$('#zn').onchange=upT;
 const op=id=>$(id).classList.add('on');
 $('#bC').onclick=()=>{$('#ci').innerHTML=Object.entries(cart).map(([k,q])=>`<div class="it"><span>${P[k].name} × ${q}</span><b>${F(P[k].total(q))}</b></div>`).join('')||'<small>Panier vide</small>';$('#zn').innerHTML=zones.map((z,i)=>`<option value="${i}">${z.name}${z.fee?' (+'+F(z.fee)+')':''}</option>`).join('');upT();if(user)$('#ph').value=user.user_metadata?.phone||'';op('#dC')};
